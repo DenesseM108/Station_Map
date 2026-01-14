@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LRT Station Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>        
+        body {
+            background-color: #d1b479; 
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-bg {
+            background: linear-gradient(135deg, #8b7355 0%, #4b3f30 100%);
+            padding-bottom: 50px;
+        }
+
+        /* Static Box Style (Hindi clickable/walang hand cursor) */
+        .station-box {
+            background: rgba(255, 255, 255, 0.018);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px; 
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            cursor: default; /* Arrow cursor lang */
+            display: block;
+            width: 100%;
+            transition: none; /* Walang transition para iwas "ilaw" */
+        }
+
+
+        .station-box.highlight {
+            background: #eed6a7; /* Gold/Beige background mula sa image_c3c833.png */
+            color: #4b3f30; /* Dark brown text para kitang-kita sa light background */
+            border: 1px solid #ffffff;
+            font-weight: bold;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 0px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .map-image-container {
+            /* Ito ang saktong kulay mula sa image_dfebf6.png */
+            width: 100%;
+            max-height: 800px;
+            background-color: #eed6a7; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px; /* Spacing para makita ang beige na background sa paligid ng mapa */
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        #route-map {
+            width: 100%;
+            border-radius: 12px;
+            /* Optional: Ginagawa nitong bahagyang transparent ang puti ng mapa 
+            para mas kumapit ang kulay na beige sa ilalim */
+            mix-blend-mode: multiply; 
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Para sa label na "Route Map" sa itaas */
+        .route-map-label {
+            color: #8b7355; /* Semi-transparent white gaya ng nasa image */
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .mt-5.pt-4.border-top {
+        border-top: 1px solid #8b7355 !important; /* Manipis na puting linya */
+        }
+
+        h4.fw-bold {
+            color: #8b7355; /* Gawing bold na puti ang Route Map text */
+        }
+
+        #map-container-section {
+        display: none; /* Hindi muna makikita sa simula */
+}
+
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid pt-5 text-white glass-bg" style="min-height: 100vh;">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-0">Station Map</h1>
+        <p class="text-white-50 mb-4">Select a Line</p>
+
+        <div class="row mb-5">
+            <div class="col-12 d-flex justify-content-center">
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="btnradio" id="lrt1" onclick="updateMap('LRT 1')">
+                    <label class="btn btn-outline-light rounded-start-pill py-3" for="lrt1">LRT 1</label>
+
+                     <input type="radio" class="btn-check" name="btnradio" id="lrt2" onclick="updateMap('LRT 2')">
+                    <label class="btn btn-outline-light py-3" for="lrt2">LRT 2</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="mrt" onclick="updateMap('MRT')">
+                    <label class="btn btn-outline-light rounded-end-pill py-3" for="mrt">MRT</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="row g-3" id="station-grid">
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="row g-3" id="station-grid">
+        </div>
+
+    <div id="map-container-section" class="mt-5 pt-4 border-top border-white-50">
+    <span class="route-map-label uppercase tracking-wider fw-bold">Route Map</span>
+        <div class="map-image-container">
+            <img id="route-map" src="LRT 2 Map.png" alt="Route Map" class="img-fluid">
+        </div>
+    </div>
+</div>
+
+<script>
+    const stationData = {
+        'LRT 1': ['Fernando Poe Jr.', 'Balintawak', 'Monumento', '5th Avenue', 'R. Papa', 'Abad Santos', 'Blumentritt', 'Tayuman', 'Bambang', 'Doroteo Jose', 'Carriedo', 'Central Terminal', 'UN Avenue', 'Pedro Gil', 'Quirino', 'Vito Cruz', 'Gil Puyat', 'Libertad', 'EDSA', 'Baclaran'],
+        'LRT 2': ['Recto', 'Legarda', 'Pureza', 'V. Mapa', 'J. Ruiz', 'Gilmore', 'Betty Go-Belmonte', 'Cubao', 'Anonas', 'Katipunan', 'Santolan', 'Marikina', 'Antipolo'],
+        'MRT': ['North Avenue', 'Quezon Avenue', 'Kamuning', 'Cubao', 'Santolan', 'Ortigas', 'Shaw Blvd', 'Boni', 'Guadalupe', 'Ayala', 'Magallanes', 'Taft Avenue']
+    };
+
+        window.onload = function() {
+        const grid = document.getElementById('station-grid');
+        const mapContainer = document.querySelector('.mt-5.pt-4.border-top');
+        
+        // 1. Siguraduhing walang radio button na naka-check
+        document.querySelectorAll('.btn-check').forEach(radio => radio.checked = false);
+
+        // 2. Ipakita ang placeholder image o itago ang map container sa simula
+        grid.innerHTML = `
+            <div class="col-12 text-center py-5 d-flex flex-column align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="placeholder-wrapper">
+                <img src="Train_building.png" alt="Train Map Essence" class="img-fluid essence-img">
+            </div>
+
+            <p class="text-white-50 mt-4">Please select a train line to view stations.</p>
+            </div>
+    `;
+
+            // 3. Itago muna ang Route Map section sa baba
+        if (mapSection) mapSection.style.display = 'none';
+        if(mapContainer) mapContainer.style.display = 'none';
+
+            // Opsyonal: Itago muna ang map image container sa simula
+        document.querySelector('.map-image-container').style.display = 'none';
+        document.querySelector('.route-map-label').style.display = 'none';
+    };
+
+    function updateMap(lineName) {
+        const grid = document.getElementById('station-grid');
+        const mapImg = document.getElementById('route-map');
+        const mapContainer = document.querySelector('.mt-5.pt-4.border-top');
+
+        if (!mapImg || !grid) return;
+       
+        grid.innerHTML = ""; // Linisin ang grid
+        if(mapContainer) mapContainer.style.display = 'block'; // Ipakita ang mapa section
+
+
+        stationData[lineName].forEach(station => {
+            const col = document.createElement('div');
+            col.className = "col-6 col-md-4 col-lg-3"; 
+            const box = document.createElement('div');
+            box.className = "station-box"; 
+            box.innerText = station;
+
+            col.appendChild(box);
+            grid.appendChild(col);
+        });
+
+        // Update ang Image source
+        if (mapImg) {
+            if (lineName === 'LRT 1') mapImg.src = "LRT 1 Map.png";
+            else if (lineName === 'LRT 2') mapImg.src = "LRT 2 Map.png";
+            else if (lineName === 'MRT') mapImg.src = "MRT Map.png";
+        }
+
+    // Pag-load ng page, ipakita ang LRT 2 agad
+    window.onload = function() {
+        updateMap('LRT 1');
+    };
+        window.onload = function() {
+        updateMap('LRT 2');
+    };
+        window.onload = function() {
+        updateMap('MRT');
+    };
+
+}
+
+
+
+</script>
+
+</body>
+</html>
