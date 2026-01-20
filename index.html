@@ -19,7 +19,6 @@
             padding-bottom: 50px;
         }
 
-        /* Static Box Style (Hindi clickable/walang hand cursor) */
         .station-box {
             background: rgba(255, 255, 255, 0.018);
             backdrop-filter: blur(10px);
@@ -30,16 +29,16 @@
             padding: 15px;
             text-align: center;
             font-weight: 500;
-            cursor: default; /* Arrow cursor lang */
+            cursor: default; 
             display: block;
             width: 100%;
-            transition: none; /* Walang transition para iwas "ilaw" */
+            transition: none; 
         }
 
 
         .station-box.highlight {
-            background: #eed6a7; /* Gold/Beige background mula sa image_c3c833.png */
-            color: #4b3f30; /* Dark brown text para kitang-kita sa light background */
+            background: #eed6a7;
+            color: #4b3f30; 
             border: 1px solid #ffffff;
             font-weight: bold;
         }
@@ -54,13 +53,13 @@
         }
 
         .map-image-container {
-            /* Ito ang saktong kulay mula sa image_dfebf6.png */
             width: 100%;
             max-height: 900px;
+            object-fit: contain;
             background-color: #eed6a7; 
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
-            padding: 25px; /* Spacing para makita ang beige na background sa paligid ng mapa */
+            padding: 25px; 
             overflow: hidden;
             box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
             text-align: center;
@@ -69,15 +68,12 @@
         #route-map {
             width: 100%;
             border-radius: 12px;
-            /* Optional: Ginagawa nitong bahagyang transparent ang puti ng mapa 
-            para mas kumapit ang kulay na beige sa ilalim */
             mix-blend-mode: multiply; 
             transition: opacity 0.3s ease-in-out;
         }
 
-        /* Para sa label na "Route Map" sa itaas */
         .route-map-label {
-            color: #8b7355; /* Semi-transparent white gaya ng nasa image */
+            color: #8b7355; 
             font-size: 0.85rem;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -85,15 +81,15 @@
         }
 
         .mt-5.pt-4.border-top {
-        border-top: 1px solid #8b7355 !important; /* Manipis na puting linya */
+        border-top: 1px solid #8b7355 !important; 
         }
 
         h4.fw-bold {
-            color: #8b7355; /* Gawing bold na puti ang Route Map text */
+            color: #8b7355;
         }
 
         #map-container-section {
-        display: none; /* Hindi muna makikita sa simula */
+        display: none;
 }
 
     </style>
@@ -151,10 +147,8 @@
         const grid = document.getElementById('station-grid');
         const mapContainer = document.querySelector('.mt-5.pt-4.border-top');
         
-        // 1. Siguraduhing walang radio button na naka-check
         document.querySelectorAll('.btn-check').forEach(radio => radio.checked = false);
 
-        // 2. Ipakita ang placeholder image o itago ang map container sa simula
         grid.innerHTML = `
             <div class="col-12 text-center py-5 d-flex flex-column align-items-center justify-content-center" style="min-height: 400px;">
             <div class="placeholder-wrapper">
@@ -165,11 +159,9 @@
             </div>
     `;
 
-            // 3. Itago muna ang Route Map section sa baba
         if (mapSection) mapSection.style.display = 'none';
         if(mapContainer) mapContainer.style.display = 'none';
 
-            // Opsyonal: Itago muna ang map image container sa simula
         document.querySelector('.map-image-container').style.display = 'none';
         document.querySelector('.route-map-label').style.display = 'none';
     };
@@ -181,8 +173,8 @@
 
         if (!mapImg || !grid) return;
        
-        grid.innerHTML = ""; // Linisin ang grid
-        if(mapContainer) mapContainer.style.display = 'block'; // Ipakita ang mapa section
+        grid.innerHTML = ""; 
+        if(mapContainer) mapContainer.style.display = 'block';
 
 
         stationData[lineName].forEach(station => {
@@ -196,14 +188,12 @@
             grid.appendChild(col);
         });
 
-        // Update ang Image source
         if (mapImg) {
             if (lineName === 'LRT 1') mapImg.src = "LRT 1 Map.png";
             else if (lineName === 'LRT 2') mapImg.src = "LRT 2 Map.png";
             else if (lineName === 'MRT') mapImg.src = "MRT Map.png";
         }
 
-    // Pag-load ng page, ipakita ang LRT 2 agad
     window.onload = function() {
         updateMap('LRT 1');
     };
@@ -217,11 +207,11 @@
 }
 
 
-
 </script>
 
 </body>
 
 </html>
+
 
 
